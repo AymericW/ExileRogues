@@ -1,33 +1,40 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Optional, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from engine import Engine
     from entity import Entity
 
 class Action:
-    def perform(self, engine: Engine, entity: Entity) -> None:
+    def perform(self) -> None:
         """Perform this action with the objects needed to determine its scope.
 
-        `engine` is the scope this action is being performed in.
+        `self.engine` is the scope this action is being performed in.
 
-        `entity` is the object performing the action.
+        `self.entity` is the object performing the action.
 
         This method must be overridden by Action subclasses.
         """
         raise NotImplementedError()
 
 class EscapeAction(Action):
-    def perform(self, engine: Engine, entity: Entity) -> None:
+    def perform(self,) -> None:
         raise SystemExit()
     
 class ActionWithDirection(Action):
-    def __init__(self, dx:int, dy:int):
-        super().__init__()
+    def __init__(self, entity: Entity, dx:int, dy:int):
+        super().__init__(entity)
         self.dx = dx
         self.dy = dy
-    def perform(self, engine: Engine, entity: Entity) -> None:
+    
+    @property
+    def dest_xy(self) -> Tuple[int, int]:
+        """Returns this actions destination."""
+        return self.entity.x + self.dx, self.entity.y + self.dy    
+    
+        
+    def perform(self) -> None:
         raise NotImplementedError()
     
 class MeleeAction(ActionWithDirection):
